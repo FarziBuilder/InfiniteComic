@@ -1,0 +1,62 @@
+import React from 'react';
+import './App.css';
+import { Configuration, OpenAIApi } from "openai";
+import { useState } from "react";
+
+class FourImages extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      clicked: 0,
+      showImages: true,
+      buttonClicked: '',
+      currentImage: 1
+    };
+    this.handleClick = this.handleClick.bind(this);
+    this.handleButtonClick = this.handleButtonClick.bind(this);
+  }
+  
+
+  handleClick(num) {
+    this.setState({
+      clicked: num,
+      showImages: false
+    });
+  }
+  
+  handleButtonClick(e) {
+    this.setState(prevState => {
+      return {
+        buttonClicked: prevState.buttonClicked + e.target.value,
+        currentImage: prevState.currentImage + 1
+      }
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        {
+          this.state.showImages && (
+            <div className = "container">
+            <img onClick ={() => this.handleClick(1)}  className="normal-size" src={require("./genie.jpg")} alt="3" />
+            <img onClick ={() => this.handleClick(2)}  className="normal-size" src={require("./genie.jpg")} alt="3" />
+            <img onClick ={() => this.handleClick(3)}  className="normal-size" src={require("./genie.jpg")} alt="3" />
+            </div>    
+          )}
+      {!this.state.showImages && (
+        <div>
+          <img src = {require(`./genie${this.state.currentImage}.jpg`)} className="normal-size" />
+          <p>You clicked on image {this.state.clicked} </p>
+          <button onClick={this.handleButtonClick} value = "A">A</button>
+          <button onClick={this.handleButtonClick} value = "B">B</button>
+          <p>Button sequence : {this.state.buttonClicked}</p>
+        </div>
+      )}
+      </div>  
+    );
+  }
+}
+
+export default FourImages;
+
