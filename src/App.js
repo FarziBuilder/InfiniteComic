@@ -1,8 +1,7 @@
 import React from 'react';
 import './App.css';
 import { Configuration, OpenAIApi } from "openai";
-import Typewriter from "typewriter-effect";
-import { useEffect, useState } from 'react';
+
 
 class FourImages extends React.Component {
   constructor(props) {
@@ -24,17 +23,16 @@ class FourImages extends React.Component {
       isAnimatingOpt1: false,
       currentIndexOpt2: 0,
       isAnimatingOpt2: false,
-      change: false
+      change: false,
 
     };
     this.handleClick = this.handleClick.bind(this);
     this.handleButtonClick = this.handleButtonClick.bind(this);
     this.configuration = new Configuration({
-      apiKey: ""
+      apiKey: "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"
     });
     this.openai = new OpenAIApi(this.configuration);
   }
-
   async generateImage(prompt) {
     try {
       const res = await this.openai.createImage({
@@ -49,7 +47,7 @@ class FourImages extends React.Component {
   }
 
   async generateText() {
-    let prompt1 = this.state.tot + "Generate the next line of what happened next in a adventure story with Ekaansh as lead character. Give an unexpected twist to the story, perhaps introduce a new character, put the main character in some trouble, reveal a hidden plot then in another paragraph Give two highly conflicting options on what Ekaansh should do next. Write the options as Option 1, Option 2. The options should give a dramatic twist to the story, the options should give a deep moral conflict to the character. like if even one option is smart, other should be rash, if even one option is violent, the other shud be peaceful etc."
+    let prompt1 = this.state.tot + "Generate the complete next 9-worded scene of what happened next in a adventure story with Faraaz as lead character in around 9 words. Give an unexpected twist to the story, perhaps introduce a new character, put the main character in some trouble, reveal a hidden plot then in another paragraph Give two highly conflicting options on what Faraaz should do next. Write the options as Option 1, Option 2. The options should give a dramatic twist to the story, the options should give a deep moral conflict to the character. like if even one option is smart, other should be rash, if even one option is violent, the other shud be peaceful etc.The options should be around 3 words long."
     console.log(prompt1);
     
     const response = await this.openai.createCompletion({
@@ -73,17 +71,36 @@ class FourImages extends React.Component {
 
     this.setState(prevState => ({tot: prevState.tot + tempLine}))
     this.setState({line: tempLine,opt1: tempOpt1,opt2: tempOpt2,currentIndexLine: 0,currentIndexOpt1: 0,currentIndexOpt2: 0,isAnimatingLine:true,isAnimatingOpt1:true,isAnimatingOpt2:true});
-    this.updateLine();
     //console.log(this.state.tot);
 
     let prompie = "high-quality retroanime detailed animated, imaginative,colorful digital art of " + tempLine
 
-    const res = await this.openai.createImage({
-      prompt: prompie,
-      n: 1,
-      size: "512x512",
-    });
-    this.setState({ generatedImage: res.data.data[0].url });
+    const updateLineCall = async () => {
+      console.log("Lineupdate ON!")
+      this.updateLine();
+    }
+
+    const createImageCall = async () => {
+      console.log("ImageUpdate ON!")
+      try {
+        const res = await this.openai.createImage({
+          prompt: prompie,
+          n: 1,
+          size: "256x256",
+        });
+        this.setState({ generatedImage: res.data.data[0].url });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    Promise.all([updateLineCall(), createImageCall()])
+      .then(() => { 
+        console.log("Both updateLine and createImage have completed");
+      })
+      .catch(error => {
+        console.log(error);
+      });
 
 
   }
@@ -103,6 +120,7 @@ class FourImages extends React.Component {
     
     let tempGeneratedText = response["data"]["choices"][0]["text"];
     console.log("hey");
+    console.log(response["data"]["choices"][0]["text"]);
     let tempSplit = tempGeneratedText.split("Option 1:");
     let tempLine = tempSplit[0];
     tempSplit = tempSplit[1].split("Option 2:");
@@ -112,22 +130,38 @@ class FourImages extends React.Component {
 
 
     this.setState({tot: tempLine, line: tempLine,opt1: tempOpt1,opt2: tempOpt2 });
-    this.updateLine();
-    
+   
     let prompie = "high-quality retroanime detailed animated, imaginative,colorful digital art of " + tempLine
-
-    try {
-      const res = await this.openai.createImage({
-        prompt: prompie,
-        n: 1,
-        size: "512x512",
-      });
-      this.setState({ generatedImage: res.data.data[0].url });
-    } catch (err) {
-      console.error(err);
+   
+    const updateLineCall = async () => {
+      console.log("Lineupdate ON!")
+      this.updateLine();
     }
 
+    const createImageCall = async () => {
+      console.log("ImageUpdate ON!")
+      try {
+        const res = await this.openai.createImage({
+          prompt: prompie,
+          n: 1,
+          size: "256x256",
+        });
+        this.setState({ generatedImage: res.data.data[0].url });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    Promise.all([updateLineCall(), createImageCall()])
+      .then(() => { 
+        console.log("Both updateLine and createImage have completed");
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
+
+
 
   handleClick(num) {
     this.setState(() => {
@@ -139,13 +173,13 @@ class FourImages extends React.Component {
     });
    
     if (num === 1){
-      this.generateFirst("Write the first line of a children adventure story of Ekaansh the Warrior. After writing the line, change paragraphs and Give two highly conflicting options on what should do next. Write the options as Option 1, Option 2. The options should give a dramatic twist to the story, the options should give a deep moral conflict to the character. like if even one option is smart, other should be rash, if even one option is violent, the other shud be peaceful etc. Write the options in a way that this what the character does. Option 1 should not affect option 2. The options should be around 10 words long.")
+      this.generateFirst("Write the complete 9-worded first scene of a children adventure story of Faraaz the Warrior in around 9 words. After writing the line, change paragraphs and Give two highly conflicting options on what should do next. Write the options as Option 1, Option 2. The options should give a dramatic twist to the story, the options should give a deep moral conflict to the character. like if even one option is smart, other should be rash, if even one option is violent, the other shud be peaceful etc. Write the options in a way that this what the character does. Option 1 should not affect option 2. The options should be around 3 words long.")
     }
     else if (num === 2){
-      this.generateFirst("Write the first line of a children horror story of Ghostbuster Ekaansh. After writing the line, change paragraphs and Give two highly conflicting options on what should do next. Write the options as Option 1, Option 2. The options should give a dramatic twist to the story, the options should give a deep moral conflict to the character. like if even one option is smart, other should be rash, if even one option is violent, the other shud be peaceful etc. Write the options in a way that this what the character does. Option 1 should not affect option 2. The options should be around 10 words long.")
+      this.generateFirst("Write the complete 9-worded first scene of a children horror story of Ghostbuster Faraaz in around 9 words. After writing the line, change paragraphs and Give two highly conflicting options on what should do next. Write the options as Option 1, Option 2. The options should give a dramatic twist to the story, the options should give a deep moral conflict to the character. like if even one option is smart, other should be rash, if even one option is violent, the other shud be peaceful etc. Write the options in a way that this what the character does. Option 1 should not affect option 2. The options should be around 3 words long.")
     }
     else if (num === 3){
-      this.generateFirst("Write the first line of a children magical story of Whizzy Ekaansh. After writing the line, change paragraphs and Give two highly conflicting options on what should do next. Write the options as Option 1, Option 2. The options should give a dramatic twist to the story, the options should give a deep moral conflict to the character. like if even one option is smart, other should be rash, if even one option is violent, the other shud be peaceful etc. Write the options in a way that this what the character does. Option 1 should not affect option 2. The options should be around 10 words long.")
+      this.generateFirst("Write the complete 9-worded first scene of a children magical story of Whizzy Farzi in around 9 words . After writing the line, change paragraphs and Give two highly conflicting options on what should do next. Write the options as Option 1, Option 2. The options should give a dramatic twist to the story, the options should give a deep moral conflict to the character. like if even one option is smart, other should be rash, if even one option is violent, the other shud be peaceful etc. Write the options in a way that this what the character does. Option 1 should not affect option 2. The options should be around 3 words long.")
     }
 
     //this.generateImage(tempLin);
@@ -171,6 +205,7 @@ class FourImages extends React.Component {
   }
 
   updateLine = () => {
+    console.log(this.state.line)
     setTimeout(() => {
       let check = this.state.line;
       this.setState(prevState => ({
